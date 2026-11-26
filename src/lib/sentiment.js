@@ -83,12 +83,6 @@ export function analyze(model, text) {
   contributions.sort((a, b) => Math.abs(b.effect) - Math.abs(a.effect));
 
   const p = 1 / (1 + Math.exp(-z));
-//   return {
-//     p,
-//     verdict: getVerdict(p),
-//     words: contributions.slice(0, 6),
-//     knownCount: contributions.length,
-//   };
 return {
   p,
   verdict: getVerdict(p),
