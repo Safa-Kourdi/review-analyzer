@@ -4,6 +4,7 @@ import useModel from "./lib/useModel";
 import TopBar from "./components/TopBar";
 import AnalyzePage from "./pages/AnalyzePage";
 import BatchPage from "./pages/BatchPage";
+import DashboardPage from "./pages/DashboardPage";
 
 export default function App() {
   const { model, error } = useModel();
@@ -29,6 +30,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<AnalyzePage model={model} error={error} />} />
         <Route path="/batch" element={<BatchPage model={model} />} />
+        <Route path="/dashboard" element={<DashboardPage model={model} />} />
       </Routes>
     </Box>
   );

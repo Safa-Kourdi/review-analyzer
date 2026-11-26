@@ -1,4 +1,4 @@
- import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -28,12 +28,21 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
 import SentimentNeutralIcon from "@mui/icons-material/SentimentNeutral";
 import { analyze } from "../lib/sentiment";
+import usePersistentState from "../lib/usePersistentState";
 
 const MAX_ROWS = 1000;
 
 const VERDICTS = {
-  positive: { label: "إيجابية", color: "success", Icon: SentimentSatisfiedAltIcon },
-  negative: { label: "سلبية", color: "error", Icon: SentimentVeryDissatisfiedIcon },
+  positive: {
+    label: "إيجابية",
+    color: "success",
+    Icon: SentimentSatisfiedAltIcon,
+  },
+  negative: {
+    label: "سلبية",
+    color: "error",
+    Icon: SentimentVeryDissatisfiedIcon,
+  },
   neutral: { label: "محايدة", color: "warning", Icon: SentimentNeutralIcon },
 };
 
@@ -100,7 +109,7 @@ function StatCard({ label, count, total, color, Icon }) {
 
 export default function BatchPage({ model }) {
   const [text, setText] = useState("");
-  const [rows, setRows] = useState(null);
+  const [rows, setRows] = usePersistentState("batch-rows", null);
   const [truncated, setTruncated] = useState(false);
   const [skipped, setSkipped] = useState(0);
   const [filter, setFilter] = useState("all");
@@ -134,7 +143,12 @@ export default function BatchPage({ model }) {
         skippedCount += 1;
         return;
       }
-      data.push({ id: data.length + 1, text: line, p: r.p, verdict: r.verdict });
+      data.push({
+        id: data.length + 1,
+        text: line,
+        p: r.p,
+        verdict: r.verdict,
+      });
     });
 
     setTruncated(lines.length > MAX_ROWS);
@@ -144,7 +158,7 @@ export default function BatchPage({ model }) {
     setQuery("");
     setPage(0);
   };
- const handleClear = () => {
+  const handleClear = () => {
     setText("");
     setRows(null);
   };
@@ -162,7 +176,7 @@ export default function BatchPage({ model }) {
     return (rows || []).filter(
       (r) =>
         (filter === "all" || r.verdict === filter) &&
-        (!q || r.text.includes(q))
+        (!q || r.text.includes(q)),
     );
   }, [rows, filter, query]);
 
@@ -234,7 +248,12 @@ export default function BatchPage({ model }) {
               startIcon={<UploadFileIcon />}
             >
               رفع ملف نصي
-              <input hidden type="file" accept=".txt,.csv" onChange={handleFile} />
+              <input
+                hidden
+                type="file"
+                accept=".txt,.csv"
+                onChange={handleFile}
+              />
             </Button>
             <Button size="large" onClick={() => setText(SAMPLE)}>
               تحميل مثال
@@ -254,7 +273,8 @@ export default function BatchPage({ model }) {
             )}
             {skipped > 0 && (
               <Alert severity="info" sx={{ mt: 3 }}>
-                تم تخطي {skipped} مراجعة لأنها لا تحتوي على كلمات يعرفها النموذج.
+                تم تخطي {skipped} مراجعة لأنها لا تحتوي على كلمات يعرفها
+                النموذج.
               </Alert>
             )}
 
@@ -268,7 +288,7 @@ export default function BatchPage({ model }) {
                   sx={{
                     display: "grid",
                     gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
- gap: 2,
+                    gap: 2,
                     mt: 3,
                   }}
                 >
@@ -310,7 +330,9 @@ export default function BatchPage({ model }) {
                         }
                       }}
                     >
-                      <ToggleButton value="all">الكل ({rows.length})</ToggleButton>
+                      <ToggleButton value="all">
+                        الكل ({rows.length})
+                      </ToggleButton>
                       <ToggleButton value="positive">
                         إيجابية ({counts.positive})
                       </ToggleButton>
@@ -347,8 +369,12 @@ export default function BatchPage({ model }) {
                     <Table>
                       <TableHead>
                         <TableRow sx={{ bgcolor: "action.hover" }}>
-                          <TableCell sx={{ width: 60, fontWeight: 700 }}>#</TableCell>
-                          <TableCell sx={{ fontWeight: 700 }}>المراجعة</TableCell>
+                          <TableCell sx={{ width: 60, fontWeight: 700 }}>
+                            #
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 700 }}>
+                            المراجعة
+                          </TableCell>
                           <TableCell sx={{ width: 150, fontWeight: 700 }}>
                             النتيجة
                           </TableCell>
@@ -360,11 +386,15 @@ export default function BatchPage({ model }) {
                       <TableBody>
                         {visible.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={4} align="center" sx={{ py: 5 }}>
+                            <TableCell
+                              colSpan={4}
+                              align="center"
+                              sx={{ py: 5 }}
+                            >
                               <Typography color="text.secondary">
                                 لا توجد نتائج مطابقة.
                               </Typography>
- </TableCell>
+                            </TableCell>
                           </TableRow>
                         ) : (
                           visible.map((r) => {
@@ -372,7 +402,9 @@ export default function BatchPage({ model }) {
                             return (
                               <TableRow key={r.id} hover>
                                 <TableCell>{r.id}</TableCell>
-                                <TableCell sx={{ fontSize: 16 }}>{r.text}</TableCell>
+                                <TableCell sx={{ fontSize: 16 }}>
+                                  {r.text}
+                                </TableCell>
                                 <TableCell>
                                   <Chip
                                     size="small"

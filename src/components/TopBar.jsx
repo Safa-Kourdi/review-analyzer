@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 const LINKS = [
   { to: "/", label: "تحليل مراجعة" },
   { to: "/batch", label: "تحليل جماعي" },
+  { to: "/dashboard", label: "لوحة المؤشرات" },
 ];
 
 export default function TopBar() {
